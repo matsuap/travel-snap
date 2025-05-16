@@ -1,6 +1,10 @@
 // @ts-nocheck
 import { createClient } from '@supabase/supabase-js';
 
+// ここで環境変数の中身を確認
+console.log('VITE_SUPABASE_URL=', import.meta.env.VITE_SUPABASE_URL);
+console.log('VITE_SUPABASE_ANON_KEY=', import.meta.env.VITE_SUPABASE_ANON_KEY);
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL!;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY!;
 
