@@ -1,42 +1,90 @@
 {
-  "name": "Fetch OG tags for new saved spots",
-  "trigger": {
-    "type": "supabase",
-    "event": "INSERT",
-    "table": "saved_spots"
-  },
-  "actions": [
+  "_comment": "Replace credential IDs with your actual Supabase API credential IDs in n8n",
+  "name": "URL Fetch Workflow",
+  "nodes": [
     {
-      "type": "httpRequest",
-      "name": "Fetch OpenGraph Data",
-      "method": "GET",
-      "url": "={{$json.url}}",
-      "responseProperty": "ogData"
+      "name": "Supabase Trigger",
+      "type": "n8n-nodes-base.supabaseTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_API_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "parameters": {
+        "table": "saved_spots",
+        "event": "INSERT"
+      }
     },
     {
-      "type": "database",
-      "name": "Update Saved Spot",
-      "table": "saved_spots",
-      "operation": "update",
-      "key": "id",
-      "value": "={{$json.id}}",
-      "updateFields": {
-        "title": "={{$json.ogData.ogTitle}}",
-        "description": "={{$json.ogData.ogDescription}}",
-        "thumbnail": "={{$json.ogData.ogImage}}"
+      "name": "Fetch OG",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [450, 300],
+      "parameters": {
+        "requestMethod": "GET",
+        "url": "={{$json[\"url\"]}}"
+      }
+    },
+    {
+      "name": "Map Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "parameters": {
+        "values": {
+          "string": [
+            { "name": "title", "value": "={{$json[\"title\"]}}" },
+            { "name": "url", "value": "={{$json[\"url\"]}}" },
+            { "name": "thumbnail_url", "value": "={{$node[\"Fetch OG\"].json[\"body\"][\"thumbnail\"]}}" },
+            { "name": "category_tags", "value": "=[]" },
+            { "name": "priority", "value": "B" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Update Spot",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [850, 300],
+      "credentials": {
+        "supabaseApi": {
+          "id": "YOUR_SUPABASE_API_CREDENTIAL_ID",
+          "name": "Supabase API"
+        }
+      },
+      "parameters": {
+        "operation": "update",
+        "table": "saved_spots",
+        "keyField": "id",
+        "updateData": "={{$node[\"Map Data\"].json}}"
       }
     }
   ],
-  "credentials": {
-    "supabase": {
-      "url": "https://YOUR_SUPABASE_URL",
-      "anonKey": "YOUR_SUPABASE_ANON_KEY"
+  "connections": {
+    "Supabase Trigger": {
+      "main": [
+        [
+          { "node": "Fetch OG", "type": "main", "index": 0 }
+        ]
+      ]
     },
-    "openGraph": {
-      "apiKey": "YOUR_OPENGRAPH_API_KEY"
+    "Fetch OG": {
+      "main": [
+        [
+          { "node": "Map Data", "type": "main", "index": 0 }
+        ]
+      ]
     },
-    "googlePlaces": {
-      "apiKey": "YOUR_GOOGLE_PLACES_API_KEY"
+    "Map Data": {
+      "main": [
+        [
+          { "node": "Update Spot", "type": "main", "index": 0 }
+        ]
+      ]
     }
   }
 } 
