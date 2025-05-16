@@ -7,17 +7,7 @@ import { supabase } from './lib/supabase';
 import './index.css';
 
 const App: React.FC = () => {
-  useEffect(() => {
-    // Perform anonymous sign-in
-    supabase.auth.signInWithOAuth({ provider: 'anon' })
-      .then(({ data, error }) => {
-        if (error) {
-          console.error('Anonymous sign-in error:', error);
-        } else {
-          console.log('Signed in anonymously as', data.session?.user.id);
-        }
-      });
-  }, []);
+  // No explicit OAuth sign-in needed; using anon key for public access
 
   return (
     <Routes>
