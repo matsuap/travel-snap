@@ -8,8 +8,15 @@ import './index.css';
 
 const App: React.FC = () => {
   useEffect(() => {
-    // Initialize anonymous auth session
-    supabase.auth.refreshSession();
+    // Perform anonymous sign-in
+    supabase.auth.signInWithOAuth({ provider: 'anon' })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('Anonymous sign-in error:', error);
+        } else {
+          console.log('Signed in anonymously as', data.session?.user.id);
+        }
+      });
   }, []);
 
   return (
