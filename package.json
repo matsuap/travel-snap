@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "start": "npm run dev",
+    "export-workflows": "n8n export:workflow --all --output n8n/workflows",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -14,14 +16,13 @@
     "jspdf": "^3.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.0",
-    "vite-plugin-pwa": "^1.0.0"
+    "vite-plugin-pwa": "^1.0.0",
+    "react-router-dom": "^7.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
-    "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.25.0",
@@ -34,4 +35,4 @@
     "typescript-eslint": "^8.30.1",
     "vite": "^6.3.5"
   }
-}
+} 

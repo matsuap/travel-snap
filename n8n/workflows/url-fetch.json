@@ -1,0 +1,42 @@
+{
+  "name": "Fetch OG tags for new saved spots",
+  "trigger": {
+    "type": "supabase",
+    "event": "INSERT",
+    "table": "saved_spots"
+  },
+  "actions": [
+    {
+      "type": "httpRequest",
+      "name": "Fetch OpenGraph Data",
+      "method": "GET",
+      "url": "={{$json.url}}",
+      "responseProperty": "ogData"
+    },
+    {
+      "type": "database",
+      "name": "Update Saved Spot",
+      "table": "saved_spots",
+      "operation": "update",
+      "key": "id",
+      "value": "={{$json.id}}",
+      "updateFields": {
+        "title": "={{$json.ogData.ogTitle}}",
+        "description": "={{$json.ogData.ogDescription}}",
+        "thumbnail": "={{$json.ogData.ogImage}}"
+      }
+    }
+  ],
+  "credentials": {
+    "supabase": {
+      "url": "https://YOUR_SUPABASE_URL",
+      "anonKey": "YOUR_SUPABASE_ANON_KEY"
+    },
+    "openGraph": {
+      "apiKey": "YOUR_OPENGRAPH_API_KEY"
+    },
+    "googlePlaces": {
+      "apiKey": "YOUR_GOOGLE_PLACES_API_KEY"
+    }
+  }
+} 
