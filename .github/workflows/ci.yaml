@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # ① リポジトリをチェックアウト
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ② キャッシュを使って node_modules の再利用
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # ③ Node.js をセットアップ
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      # ④ 依存のインストール
+      - name: Install dependencies
+        run: npm ci
+
+      # ⑤ ビルド実行
+      - name: Build
+        run: npm run build
+
+      # （オプション）Lint やテストを追加したい場合
+      #- name: Run lint
+      #  run: npm run lint
+      #
+      #- name: Run tests
+      #  run: npm test
