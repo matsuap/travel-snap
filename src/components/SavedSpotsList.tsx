@@ -25,16 +25,20 @@ const SavedSpotsList: React.FC = () => {
     };
     fetchSpots();
 
-    // Subscribe to new inserts
-    const subscription = supabase
-      .from('saved_spots')
-      .on('INSERT', payload => {
-        setSpots(prev => [payload.new, ...prev]);
-      })
+    // Subscribe to new inserts using Supabase v2 realtime API
+    const channel = supabase
+      .channel('public:saved_spots')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'saved_spots' },
+        ({ new: newSpot }) => {
+          setSpots(prev => [newSpot, ...prev]);
+        }
+      )
       .subscribe();
 
     return () => {
-      supabase.removeSubscription(subscription);
+      channel.unsubscribe();
     };
   }, []);
 
